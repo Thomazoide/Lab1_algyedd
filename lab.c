@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include<string.h>
-#define max 200 /*Macro que almacena un valor maximo para ser usado a la hora de leer una linea de un archivo*/
+#define max 200 //Macro que almacena un valor maximo para ser usado a la hora de leer una linea de un archivo
+
+//Bloque de estructuras
 
 typedef struct nodo{
     char rut[max];
@@ -10,9 +12,11 @@ typedef struct nodo{
     struct nodo *sig;
 }lista;
 
-lista *raiz = NULL;
+//lista *raiz = NULL;
 
-void insertar(char linea[]){
+//Bloque de funciones
+
+void insertar(char linea[], lista *raiz){
     lista *nuevo = malloc(sizeof(lista));
     char *token;
     token = strtok(linea, ",");
@@ -26,12 +30,14 @@ void insertar(char linea[]){
         nuevo->sig = NULL;
     }
     else{
-        nuevo->sig = raiz;
-        raiz = nuevo;
+        while(raiz->sig != NULL){
+            raiz = raiz->sig;
+        }
+        raiz->sig = nuevo;
     }
 }
 
-void quitarDuplicados(){
+void quitarDuplicados(lista *raiz){
     lista *recorrido, *duplicado;
     recorrido = raiz;
     while(recorrido != NULL){
@@ -47,7 +53,7 @@ void quitarDuplicados(){
     }
 }
 
-void imprimir(){
+void imprimir(lista *raiz){
     lista *recorrido = raiz;
     printf("\tCompras de usuarios\n");
     int i = 0;
@@ -58,7 +64,7 @@ void imprimir(){
     }
 }
 
-void limpiar(){
+void limpiar(lista *raiz){
     lista *recorrido, *basura;
     recorrido = raiz;
     while(recorrido != NULL){
@@ -66,18 +72,22 @@ void limpiar(){
         recorrido = recorrido->sig;
         free(basura);
     }
+    raiz = NULL;
 }
 
+//Bloque principal
+
 int main(){
+    lista *head;
     FILE *f;
     f = fopen("entrada.txt", "r");
     char linea[max];
-    while(!feof(f)){
-        fgets(linea, max, f);
-        insertar(linea);
+    while(fgets(linea, max, f) != NULL){
+        //fgets(linea, max, f);
+        insertar(linea, head);
     }
-    quitarDuplicados();
-    imprimir();
+    quitarDuplicados(head);
+    imprimir(head);
     fclose(f);
-    limpiar();
+    limpiar(head);
 }
